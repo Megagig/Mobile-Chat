@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import prisma from '../db/prisma.js';
 import bcryptjs from 'bcryptjs';
 import generateToken from '../utils/generateToken.js';
@@ -62,6 +62,44 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {};
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    //compare password
+    const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    //generate token  and send response
+    generateToken(user.id, res);
+    res.status(200).json({
+      message: 'User logged in successfully',
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        username: user.username,
+        boyProfilePic: user.profilePic,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 export const logout = async (req: Request, res: Response) => {};
