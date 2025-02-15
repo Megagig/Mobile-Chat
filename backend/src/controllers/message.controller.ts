@@ -72,3 +72,45 @@ export const sendMessage = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+/**
+ * Retrieves messages from a conversation between the authenticated user and another user.
+ *
+ * @param req - The HTTP request object
+ * @param res - The HTTP response object
+ */
+
+export const getMessages = async (req: Request, res: Response) => {
+  try {
+    // Extract the user to chat with from the request parameters and the sender ID from the authenticated user
+    const { id: userToChatId } = req.params;
+    const senderId = req.user.id;
+
+    // Find the conversation between the sender and the user to chat with, including all messages in the conversation
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        participantIds: {
+          hasEvery: [senderId, userToChatId],
+        },
+      },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+      },
+    });
+
+    // If no conversation is found, return an empty array
+    if (!conversation) {
+      return res.status(200).json([]);
+    }
+
+    // Return the messages in the conversation
+    res.status(200).json(conversation.messages);
+  } catch (error: any) {
+    console.error('Error in getMessages: ', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
