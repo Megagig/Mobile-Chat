@@ -1,11 +1,9 @@
-import e from 'express';
 import express from 'express';
+import { sendMessage } from '../controllers/message.controller.js';
+import protectedRoute from '../middleware/protectedRoute.js';
 
 const messageRoutes = express.Router();
 
-messageRoutes.post('/', (req, res) => {
-  console.log(req.body);
-  res.send('Hello World!');
-});
+messageRoutes.post('/send/:id', protectedRoute, sendMessage);
 
 export default messageRoutes;

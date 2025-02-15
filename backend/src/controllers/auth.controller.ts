@@ -96,9 +96,11 @@ export const login = async (req: Request, res: Response) => {
         boyProfilePic: user.profilePic,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message });
   }
 };
 
