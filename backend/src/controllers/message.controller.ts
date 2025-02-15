@@ -114,3 +114,38 @@ export const getMessages = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+/**
+ * Retrieves a list of users, excluding the currently authenticated user,
+ * and returns them in a JSON response.
+ *
+ * @param {Request} req - The incoming HTTP request
+ * @param {Response} res - The outgoing HTTP response
+ */
+export const getUsersForSidebar = async (req: Request, res: Response) => {
+  try {
+    // Get the ID of the currently authenticated user
+    const authUserId = req.user.id;
+
+    // Query the database for users with IDs that do not match the authenticated user's ID
+    const users = await prisma.user.findMany({
+      // Filter out the authenticated user
+      where: {
+        id: {
+          not: authUserId,
+        },
+      },
+      // Select only the desired fields
+      select: {
+        id: true,
+        fullName: true,
+        profilePic: true,
+      },
+    });
+    // Return the list of users in a JSON response with a 200 status code
+    res.status(200).json(users);
+  } catch (error: any) {
+    console.error('Error in getUsersForSidebar: ', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
