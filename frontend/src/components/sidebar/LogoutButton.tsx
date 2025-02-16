@@ -1,14 +1,14 @@
-import { LogOut } from "lucide-react";
+import { LogOut } from 'lucide-react';
+import useLogout from '../../hooks/useLogout';
 
 const LogoutButton = () => {
-	const logout = () => {
-		alert("You are logged out");
-	};
+  const { loading, logout } = useLogout();
 
-	return (
-		<div className='mt-auto'>
-			<LogOut className='w-6 h-6 text-white cursor-pointer' onClick={logout} />
-		</div>
-	);
+  return (
+    <div className="mt-auto">
+      <LogOut className="w-6 h-6 text-white cursor-pointer" onClick={logout} />
+      {loading && <div>Loading...</div>}
+    </div>
+  );
 };
 export default LogoutButton;

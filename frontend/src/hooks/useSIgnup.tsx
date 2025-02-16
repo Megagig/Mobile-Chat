@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuthContext } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 type SignupInputs = {
   fullName: string;
@@ -28,6 +29,7 @@ const useSignup = () => {
       if (!response.ok) throw new Error(data.error);
       setAuthUser(data);
     } catch (error: any) {
+      toast.error(error.message);
       console.error(error.message);
     } finally {
       setLoading(false);
