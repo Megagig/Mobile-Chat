@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../db/prisma.js';
+import { getReceiverSocketId, io } from '../socket/socket.js';
 
 /**
  * Controller function to handle sending a message between two users.
@@ -64,6 +65,11 @@ export const sendMessage = async (req: Request, res: Response) => {
     }
 
     //Add socket.io code here
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit('newMessage', newMessage);
+    }
 
     // Send the new message as response
     res.status(201).json(newMessage);
