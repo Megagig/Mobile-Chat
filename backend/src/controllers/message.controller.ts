@@ -90,7 +90,11 @@ export const sendMessage = async (
  * @param res - The HTTP response object
  */
 
-export const getMessages = async (req: Request, res: Response) => {
+export const getMessages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     // Extract the user to chat with from the request parameters and the sender ID from the authenticated user
     const { id: userToChatId } = req.params;
@@ -114,7 +118,8 @@ export const getMessages = async (req: Request, res: Response) => {
 
     // If no conversation is found, return an empty array
     if (!conversation) {
-      return res.status(200).json([]);
+      res.status(200).json([]);
+      return;
     }
 
     // Return the messages in the conversation
