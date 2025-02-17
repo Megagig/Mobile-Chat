@@ -24,11 +24,11 @@ const protectedRoute = async (
   try {
     const token = req.cookies.jwt;
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized! No token provided' });
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
     if (!decoded) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized! No token provided' });
     }
 
     const user = await prisma.user.findUnique({
