@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import prisma from '../db/prisma.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
 
@@ -8,7 +8,11 @@ import { getReceiverSocketId, io } from '../socket/socket.js';
  * @param req - Express request object
  * @param res - Express response object
  */
-export const sendMessage = async (req: Request, res: Response) => {
+export const sendMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     // Extract message content from request body
     const { message } = req.body;
